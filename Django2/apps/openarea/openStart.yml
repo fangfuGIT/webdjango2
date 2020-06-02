@@ -1,0 +1,35 @@
+
+---
+- hosts: all
+  remote_user: root
+  tasks:
+    - name: mkdir openarea
+      file: dest=/tmp/openarea  mode=755 state=directory
+    - name: copy openarea.sh to /tmp/openarea 
+      template: src=openarea/{{ item }} dest=/tmp/openarea/{{ item }} mode=0700
+      with_items:
+         - openarea.sh
+    - name: copy db_sgws_model db_log_model  db_mart_model to /tmp/openarea 
+      template: src=openarea/{{ centerServiceIp }}/tmp/{{ item }} dest=/tmp/openarea/{{ item }} mode=0700
+      with_items:
+         - db_sgws_model.sql
+         - db_log_model.sql
+         - db_mart_model.sql
+ - name: start openarea
+   hosts: open
+   gather_facts: no
+   vars_files:
+      - vars/openarea_vars.yml
+   tasks:
+    - name: exec openarea.sh
+      shell: ./openarea.sh {{ mysqlUser }} {{ mysqlPwd }} {{ lanip }} {{ plat }} {{ serverid }}
+      args:
+         chdir: /tmp/openarea
+ - name: path=/tmp/openarea state=absent
+   hosts: copyfile
+   gather_facts: no
+   vars_files:
+      - vars/openarea_vars.yml
+   tasks:
+    - name: path=/tmp/openarea state=absent
+      file: path=/tmp/openarea state=absent

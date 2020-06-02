@@ -1,0 +1,67 @@
+{%extends 'base.html' %}
+
+{% block page_title %}
+    版本发布列表
+{% endblock %}
+{%block page_header%}
+    <h1 class="page-header" xmlns="http://www.w3.org/1999/html">版本发布列表</h1>
+{%endblock%}
+
+{%block page_content%}
+    <form action="/repo_list/" method="post">
+    <table>
+
+                  <table class="table table-striped table-bordered" id="productform">
+                          <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>任务名称</th>
+                            <th>描述</th>
+                            <th>类型</th>
+                            <th>库类型</th>
+                            <th>取源地址</th>
+                            <th>服务器地址</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                            {% for item in result %}
+                                <tr class="even gradeX">
+{#                                <td><input type="checkbox" id="id" class="i-checks" value="{{ item.repo_name }}" name="id" /></td>#}
+                                <td>{{ item.id }}</td>
+                                <td><li style="list-style-type:none" value="{{ item.repo_name }}">{{ item.repo_name }}</li></a> </td>
+                                <td>{{ item.repo_desc }}</td>
+                                <td>{{ item.repo_type }}</td>
+                                <td>{{ item.repo_source_type }}</td>
+                                <td>{{ item.repo_source_address }}</td>
+                                <td>{{ item.server_ip }}</td>
+                                <td>{{ item.created_at }}</td>
+                                <td>
+                                        <a href="/repo_edit/?id={{  item.id }}"><span class="btn btn-sm btn-info">编辑</span></a>
+{#                                        <a href="{% url "index" %}?repo_name={{ item.repo_name }}" onclick="return confirm('确认删除吗？')"><span class="btn btn-sm btn-danger ">删除</span></a>#}
+                                        <a href="/repo_del/?id={{ item.id }}" onclick="return confirm('任务名称：{{ item.repo_name }}\n确认删除吗？')"><span class="btn btn-sm btn-danger ">删除</span></a>
+                                </td>
+
+                                </tr>
+                      {% endfor %}
+
+        </tbody>
+    </table>
+
+
+
+{##}
+{#        {% for item in result %}#}
+{#           <td><p>{% for key,value in item.items %}</p></td>#}
+{#               <tr style="width:200px;height: 30px;background-color: #1b9dec;"><th>{{ key }}</th>#}
+{##}
+{#               {{ value }}#}
+{#               {% for n in value.items %}#}
+{#                   <tr><th>{{ value.items }}</th></tr>#}
+{#               {% endfor %}#}
+{#           {% endfor %}#}
+{#        {% endfor %}#}
+    </table>
+
+{%endblock%}

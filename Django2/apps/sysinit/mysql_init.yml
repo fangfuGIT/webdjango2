@@ -1,0 +1,46 @@
+#---
+#- hosts: all
+ # vars: 
+  #  centrerConsoleIp: 
+ # tasks:
+  - name: mkdir mysqlinstall
+    file: dest=/tmp/mysql_init  mode=755 state=directory
+  - name: copy mysql_perm_init to server
+    template: src=/data/devops-packages/sysinit/mysql_init/{{ item }} dest=/tmp/mysql_init/{{ item }} mode=0700
+    with_items: 
+      - mysql_perm_init.sh
+  - name: mysql_perm_init
+    shell: /tmp/mysql_init/mysql_perm_init.sh  {{ CustomModel }} {{ systype }}
+  - name: restart mysqlinstall
+    service: name=mysqld state=restarted
+  - name: copy backup.sh to server
+    copy: src=/data/devops-packages/sysinit/mysql_init/{{ item }} dest=/data/gameTools/{{ item }} mode=0700
+    with_items:
+      - backup.sh
+      - scclean_databases_slave.sh
+      - droppartion_del.sql
+    when: systype == "s"
+  - name: copy crontab_s to /var/spool/cron/root
+    copy: src=/data/devops-packages/sysinit/mysql_init/{{ item }} dest=/var/spool/cron/root mode=0700
+    with_items:
+      -  crontab_s
+    when: systype == "s"
+  - name: copy exec_event.sh to server
+    copy: src=/data/devops-packages/sysinit/mysql_init/{{ item }} dest=/data/gameTools/{{ item }} mode=0700
+    with_items:
+      - exec_event.sh
+      - scclean_databases.sh
+      - droppartion_del.sql
+    when: systype == "m"
+  - name: copy crontab_m to /var/spool/cron/root
+    template: src=/data/devops-packages/sysinit/mysql_init/{{ item }} dest=/var/spool/cron/root mode=644
+    with_items:
+     - crontab_m
+    when: systype == "m"
+  - name: restart crond
+    service: name=crond state=restarted
+  - name: mysql slave
+    shell: source /etc/profile; echo "stop slave;CHANGE MASTER TO MASTER_HOST='{{ m_slanip }}',MASTER_USER='replication_user',MASTER_PASSWORD='replilovepw!@#$%',MASTER_PORT=2433;start slave " | mysql -u{{ mysqlUser }} -p{{ mysqlPwd }}
+    when: systype == "s"
+  - name: rm /tmp/mysql_init
+    file: path=/tmp/mysql_init state=absent

@@ -1,0 +1,27 @@
+#---
+#- hosts: all
+#  tasks:
+   - name: mkdir mysqlinstall
+     file: dest=/tmp/mysqlinstall  mode=755 state=directory
+   - name: copy mysqlinstall to server
+     copy: src=/data/devops-packages/sysinit/mysqlinstall/{{ item }} dest=/tmp/mysqlinstall/{{ item }}  mode=744
+     with_items:
+       - Percona-Server-5.6.29-rel76.2-Linux.x86_64.ssl101.tar.gz
+       - mysqlinstall.sh
+       # - passwd.sh
+   - name: copy my.cnf to server /etc/my.cnf
+     template: src=/data/devops-packages/sysinit/mysqlinstall/{{ item }} dest=/etc/{{ item }}  mode=744
+     with_items:
+       - my.cnf
+   - name: mkdir mysqlinstall
+     file: dest=/data/shelllog  mode=777 state=directory
+   - name: add user mysql
+     group: name=mysql state=present
+   - name: add user mysql
+     user: name=mysql group=mysql shell=/sbin/nologin uid=501
+   - name: installmysql
+     shell: /tmp/mysqlinstall/mysqlinstall.sh
+     args:
+        chdir: /tmp/mysqlinstall/
+   - name: rm /tmp/mysqlinstall
+     file: path=/tmp/mysqlinstall state=absent

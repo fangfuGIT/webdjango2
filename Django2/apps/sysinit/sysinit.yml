@@ -1,0 +1,54 @@
+
+---
+- hosts: all
+  remote_user: root
+  tasks:
+#   - name: check ansible_memtotal_mb capacity
+#     fail:  msg=" ansible_memtotal_mb  < 30000"
+#     when:  ansible_memtotal_mb  < 30000
+#   - name: check ansible_memory_mb.swap.total capacity
+#     fail: msg=" ansible_memory_mb.swap.total  < 300"
+#     when:  ansible_memory_mb.swap.total  < 300
+#   - name: check ansible_processor_vcpus
+#     fail: msg=" ansible_processor_vcpus  < 8"
+#     when:  ansible_processor_vcpus  < 8
+#   - name: check ansible_machine
+#     fail: msg=" ansible_machine  != x86_64"
+#     when:  ansible_machine  != "x86_64"
+#   - name: check ansible_distribution_version
+#     fail: msg=" ansible_distribution_version  != 6.5"
+#     when:   ansible_distribution_version  != "6.5"
+#   - name: check Hard disk "/data" vdb capacity1
+#     shell: source /etc/profile; df -h | grep "/data"|awk '{print $4}'|awk -F G '{print $1}'
+#   - name: change /data result type:int
+#     debug: var={{ result.stdout }}|int
+#   - name: check Hard disk "/data" vdb capacity2
+#     fail: msg=" /data < 800G"
+#     when: result.stdout|int < 200
+#   - name: check Hard disk "/" vdb capacity1
+#     shell: source /etc/profile; df -h | grep -w '/' |awk '{print $4}'|awk -F G '{print $1}'
+#     register: result
+#   - name: change / result type:int
+#     debug: var={{ result.stdout }}|int
+#   - name: check Hard disk "/" vdb capacity2
+#     fail: msg=" / < 30G"
+#     when: result.stdout|int < 30
+   - include: sys_base_init.yml
+     tags:
+       - sys_base_init
+#   - include: mysqlinstall.yml
+#     tags:
+#       - mysql_install
+#   - include: mysql_init.yml
+#     tags:
+#       - mysql_init
+#   - include: zabbix_agentinstall.yml
+#     tags:
+#       - zabbix_agentinstall
+
+
+  #   - include: sys_perm_init.yml
+#     tags:
+#       - sys_perm_init
+
+

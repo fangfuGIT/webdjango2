@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>systeminit</title>
+</head>
+<body>
+
+Good day, Commander!
+<br />
+<br />
+This is system initialization test page
+<br />
+<br />
+<form action="../call_init_yml/" method="post">
+    <label>------Please input parameter------</label><br />
+    <label>远程用户名</label>
+    <input type="text" name="user" value="root"><br />
+    <label>远程密码&nbsp&nbsp&nbsp</label>
+    <input type="text" name="passwd"><br />
+    <label>远程端口&nbsp&nbsp&nbsp</label>
+    <input type="text" name="port" value="22"><br />
+    <label>操作日期&nbsp&nbsp&nbsp</label>
+    <input type="text" name="time" value="20181009"><br />
+    <input type="submit">{% csrf_token %}
+</form>
+
+</body>
+</html>

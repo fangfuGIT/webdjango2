@@ -1,0 +1,5 @@
+[copyfile]
+['192.168.2.236']
+[open]
+(b'host_SL_1001001_192.168.2.236', 'ansible_ssh_host=192.168.2.236', 'lanip=192.168.2.236', None, 'plat=sl', b'serverid=1001001')
+(b'host_SL_1001002_192.168.2.236', 'ansible_ssh_host=192.168.2.236', 'lanip=192.168.2.236', None, 'plat=sl', b'serverid=1001002')

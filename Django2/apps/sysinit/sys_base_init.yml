@@ -1,0 +1,57 @@
+    
+   - name: yum -y install libselinux-python
+     shell: 'yum -y install libselinux-python'
+   - name: copy yum epel.repo Percona.repo
+     template: src=/data/devops-packages/sysinit/sys_base_init/{{ item }} dest=/etc/yum.repos.d/{{ item }} mode=644
+     with_items:
+      - epel.repo
+      - Percona.repo
+   - name: copy yum epel.repo Percona.repo
+     template: src=/data/devops-packages/sysinit/sys_base_init/{{ item }} dest=/etc/pki/rpm-gpg/{{ item }} mode=644
+     with_items:
+      - RPM-GPG-KEY-EPEL-6
+      - RPM-GPG-KEY-percona
+   - name: install program 
+     shell: 'yum -y install gcc bash glibc glibc-common gd gd-devel xinetd openssl-devel openssh-clients* libxml2 libxml2-devel net-snmp* expect expect-devel ntp* telnet wget tar bc sed iostat dos2unix sysstat dstat sodu sshd numactl libaio'
+   - name: copy sys_base_init file
+     template: src=/data/devops-packages/sysinit/sys_base_init/{{ item }} dest=/etc/{{ item }} mode=644
+     with_items:
+     - profile
+     - sysctl.conf
+   - name: Synchronization time 
+     shell: source /etc/profile ;ntpdate asia.pool.ntp.org ;clock -w;
+   - name: restart ntpd
+     service: name=ntpd state=restarted
+   - name: /etc/security/limits.conf
+     shell: source /etc/profile ;echo -e "sed -i 's/1024/102400/g' 90-nproc.conf";echo -e "* soft nofile 102400 \n* hard nofile 102400" >>/etc/security/limits.conf
+   - name: sysctl
+     shell: sysctl -p
+#   - name: copy ifcfg-eth1 file to sys
+#     template: src=sys_base_init/{{ item }} dest=/etc/sysconfig/network-scripts/{{ item }} mode=644 owner=root
+#     with_items:
+#     - ifcfg-eth1
+#   - name: check ifcfg-eth1
+#     shell: sed -i "s/ONBOOT=.*/ONBOOT=\"yes\"/g" ifcfg-eth1; sed -i '/IPADDR=.*/d' ifcfg-eth1 ; echo IPADDR={{ lanip }} >> ifcfg-eth1
+#     args:
+#      chdir: /etc/sysconfig/network-scripts/
+#   - name: ifdown eth1
+#     shell: /sbin/ifdown eth1
+#   - name: ifup eth1
+#     shell: /sbin/ifup eth1
+   - name: delete consle
+     shell: rm -f {{ item }}
+     with_items:
+      - /etc/security/console.apps/halt
+      - /etc/security/console.apps/poweroff
+      - /etc/security/console.apps/reboot
+   - name: sysAccount_init
+     shell: passwd -l {{ item }}
+     with_items: [vcsa,games,nobody,gopher,ftp,mail,shutdown,halt,uucp,operator,sync,adm,lp,bin]
+     ignore_errors: True
+   - name: chkconfigOff
+     shell: "chkconfig {{ item }} off || /bin/true ; service {{ item }} off ||  /bin/true"
+     with_items:
+       - sendmail 
+       - portmap
+       - cups
+       - rpcidmapd

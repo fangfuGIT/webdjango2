@@ -1,0 +1,47 @@
+<!DOCTYPE html >
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>运维平台</title>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript">//<![CDATA[
+    $(function () {
+        $('#cmd').click(function () {
+            var socket = new WebSocket("ws://192.168.2.139:8000/echo_once/");
+            socket.onopen = function () {
+                console.log('WebSocket open');//成功连接上Websocket
+                socket.send($('#h').val());//发送数据到服务端
+            };
+            socket.onmessage = function (e) {
+                console.log('message: ' + e.data);//打印服务端返回的数据
+                $('#messagecontainer').prepend('<p><pre>' + e.data + '</pre></p>');
+                $('#messagecontainer').prepend('<hr />');
+            };
+        });
+    });
+    </script>
+</head>
+<body>
+<br>
+<input name="cmdd" type="text" id="h" value="" placeholder="命令">
+<button style="margin: 20px;height: 40px;background-color: #00ff00;" id="cmd" type="submit" value="backup"  >
+    执行命令
+</button>
+<h3 style="margin: 20px;">脚本执行结果:</h3>
+<div id="messagecontainer" style="margin: 20px;">
+</div>
+<hr/>
+
+</body>
+</html>
+
+
+
+{#<form action="/echo_once/" method="post">#}
+{#    <input name="cmdd" type="text" id="h" value="" placeholder="命令">#}
+{##}
+{#    <button style="margin: 20px;height: 40px;background-color: #00ff00;" id="cmd" type="submit" value="backup"  >#}
+{#    执行命令#}
+{#    </button>#}
+{#{% csrf_token %}#}
+{#</form>#}

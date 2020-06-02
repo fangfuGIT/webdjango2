@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OpenArea</title>
+</head>
+<body>
+
+Good day, Commander!<br />
+<br />
+This is openarea test page !<br />
+<br />
+open area<br />
+<br />
+<form action="../call_openarea/" method="post">
+    <label>------Please input the parameters------</label><br />
+    <br />
+    <label>游戏项目</label>
+    <input type="text" name="GameProject" value="3"><br />
+    <br />
+    <label>days&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
+    <input type="text" name="days"><br />
+    <br />
+    <input type="submit">{% csrf_token %}
+</form>
+
+</body>
+</html>

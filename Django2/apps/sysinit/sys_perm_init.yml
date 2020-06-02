@@ -1,0 +1,23 @@
+---
+- hosts: all
+  tasks:
+
+#   - name: add user pwshell
+#     user: name=pwshell password=$6$/Kbgn0iT$GpYY7MZYyuQb4Vl3wBAoFOwTmPKRT.zhyYPlwyay8TFG/qilLVCi7JmWSSyPBs8FeUks7JmZdcdVDQRjAlf8u. shell=/bin/bash
+ #  - name: copy sshd_config to server
+ #    template: src=sys_perm_init/sshd_config dest=/etc/ssh/sshd_config mode=400
+#   - name: restart sshd
+#     service: name=sshd state=restarted
+   - name: copy sudoers to server
+     template: src=/data/devops-packages/sysinit/sys_perm_init/sudoers dest=/etc/sudoers mode=400
+   - name: copy iptables to server
+     template: src=/data/devops-packages/sysinit/sys_perm_init/iptables dest=/etc/sysconfig/iptables mode=700
+  # - name: change root passwd
+  #   user: name=root password=$6$NXiV.17g$hqQyb88976JLZqgGgG9WBeXj0tUcu5llxu1h8b4WcqeWRVKjHszJCa8QNAg6iu.hW7VepcI.vujsmlKWAMSZM.
+   - name: restart sshd iptables
+     service: name={{ item }} state=restarted
+     with_items:
+        - sshd
+        - iptables
+        - crond
+

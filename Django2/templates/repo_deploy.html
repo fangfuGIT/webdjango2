@@ -1,0 +1,52 @@
+{%extends 'base.html' %}
+
+{% block page_title %}
+    repo_deploy
+{% endblock %}
+{%block page_header%}
+    <h1 class="page-header">版本发布</h1>
+{%endblock%}
+
+
+{%block page_content%}
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+        <label>选择任务：</label>
+            <form id="status" onchange="gradeChange()">
+                <select class="form-control">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                </select>
+            </form>
+        </div>
+
+
+
+        {% csrf_token %}
+            {% for field in form %}
+                <b>{{ field.label }}：</b>
+                {{ field }}
+                <br>
+            {% endfor %}
+
+        <input type="submit" class="btn btn-success" onclick="return confirm('任务名称：{{ status }}\n确认发布任务吗？')" value="提交">
+    </form>
+{%endblock%}
+
+
+<script type="text/JavaScript" id="status">
+        alert('adf')
+
+       function gradeChange(){
+                   var selectText = $("status").find("option:selected").text();
+
+        alert(selectText);
+        {#var objS = document.getElementById("pid");#}
+        {#var grade = objS.options[objS.selectedIndex].grade;#}
+        {#alert(grade);#}
+       }
+</script>

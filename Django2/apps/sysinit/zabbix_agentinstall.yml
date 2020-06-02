@@ -1,0 +1,58 @@
+#---
+#- hosts: all
+#  tasks:
+    - name: install php php_mysql 
+      shell: yum -y install  php php-mysql libselinux-python
+    - name: add group zabbix
+      group: name=zabbix state=present
+    - name: add user zabbix
+      user: name=zabbix groups=zabbix shell=/sbin/nologin  state=present append=yes
+    - name: mkdir zabbix_agent_install
+      file: dest={{ item }}  mode=755 state=directory
+      with_items:
+         - /tmp/zabbix_agent_install
+         - /etc/zabbix
+         - /etc/zabbix/zabbix_agentd.conf.d
+         - /var/lib/mysql
+    - name: copy php.ini to server
+      copy: src=/data/devops-packages/sysinit/zabbix_agent_install/php.ini dest=/etc/php.ini owner=root group=root
+    - name: copy zabbix-2.2.8.tar.gz file to server
+      copy: src=/data/devops-packages/sysinit/zabbix_agent_install/zabbix-2.2.8.tar.gz dest=/tmp/zabbix_agent_install/zabbix-2.2.8.tar.gz owner=root group=root
+    - name: Uncompression Zabbix Client Software   
+      shell: tar zxf /tmp/zabbix_agent_install/zabbix-2.2.8.tar.gz
+      args:
+         chdir: /tmp/zabbix_agent_install
+    - name: /configure --prefix=/usr/local/zabbix --sysconfdir=/etc/zabbix  --enable-agent  && make && make install
+      shell: ./configure --prefix=/usr/local/zabbix --sysconfdir=/etc/zabbix  --enable-agent  && make && make install
+      args:
+         chdir: /tmp/zabbix_agent_install/zabbix-2.2.8
+    - name:  mkdir /var/log/zabbix
+      file: name=/var/log/zabbix group=zabbix owner=zabbix state=directory
+      with_items:
+         - /var/log/zabbix
+    - name: 
+      shell: cp misc/init.d/fedora/core/zabbix_agentd /etc/init.d/ && chmod 755 /etc/init.d/zabbix_agentd && sed -i "s#BASEDIR=/.*#BASEDIR=/usr/local/zabbix#g" /etc/init.d/zabbix_agentd;chkconfig zabbix_agentd on && service zabbix_agentd start
+      args:
+        chdir: /tmp/zabbix_agent_install/zabbix-2.2.8
+    - name: Copy Zabbix angentd Config Server
+      template: src=/data/devops-packages/sysinit/zabbix_agent_install/zabbix_agentd.conf dest=/etc/zabbix/zabbix_agentd.conf owner=zabbix group=zabbix mode=0644
+    - name: Give Sudo Permission To Zabbix User    
+      shell: echo "zabbix ALL=(root) NOPASSWD:/bin/netstat, /usr/bin/omreport" >> /etc/sudoers
+    - name: copy percona-zabbix-templates-1.1.4-1.noarch.rpm file to server
+      copy: src=/data/devops-packages/sysinit/zabbix_agent_install/percona-zabbix-templates-1.1.4-1.noarch.rpm dest=/tmp/zabbix_agent_install
+    - name: install percona-zabbix-templates-1.1.4-1.noarch.rpm 
+      yum: name=/tmp/zabbix_agent_install/percona-zabbix-templates-1.1.4-1.noarch.rpm state=present
+    - name: copy userparameter_percona_mysql.conf 
+      copy: src=/data/devops-packages/sysinit/zabbix_agent_install/userparameter_percona_mysql.conf dest=/etc/zabbix/zabbix_agentd.conf.d/userparameter_percona_mysql.conf owner=zabbix group=zabbix
+    - name: ln -s /data/mysql/mysql.sock /data/mysql/mysql.sock
+      shell: ln -s /data/mysql/data/mysql.sock /var/lib/mysql/mysql.sock |/bin/true;ln -s /data/mysql/data/mysql.sock /tmp/mysql.sock |/bin/true
+    - name: copy scripts
+      copy: src=/data/devops-packages/sysinit/zabbix_agent_install/scripts/ dest=/var/lib/zabbix/percona/scripts/ owner=root group=root
+    - name: exec /var/lib/zabbix/percona/scripts/get_mysql_stats_wrapper.sh gg
+      shell: /var/lib/zabbix/percona/scripts/get_mysql_stats_wrapper.sh gg
+    - name: chown -R zabbix:zabbix /tmp/*-mysql_cacti_stats.txt
+      shell: chown -R zabbix:zabbix /tmp/*-mysql_cacti_stats.txt
+    - name: restart zabbix_agentd
+      service: name=zabbix_agentd state=restarted
+    - name: rm path=/tmp/zabbix_agent_install
+      file: path=/tmp/zabbix_agent_install state=absent

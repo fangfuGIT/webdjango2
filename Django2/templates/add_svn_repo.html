@@ -1,0 +1,37 @@
+{%extends 'base.html' %}
+
+{% block page_title %}
+    test
+{% endblock %}
+{%block page_header%}
+
+    <h1 class="page-header">test</h1>
+
+{%endblock%}
+<html>
+{%block page_content%}
+
+<a href="/new_Repo">Add a new topic:</a>
+
+{%endblock%}
+
+</html>
+
+<script>
+    $("#fath").click(function(){
+        var coreapi = window.coreapi  // Loaded by `coreapi.js`
+        var schema = window.schema    // Loaded by `schema.js`
+
+// Initialize a client
+        var client = new coreapi.Client()
+
+// Interact with the API endpoint
+        var action = ["database", "list"]
+        client.action(schema, action).then(function(result) {
+            return 1111
+    // Return value is in 'result'
+})
+    })
+
+
+</script>

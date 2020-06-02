@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+</head>
+<br>
+    <form action="../login/" method="get">
+        <label for="username">用户名：</label>
+        <input id="username" type="text" name="username" value="{{ username }}"><br/>
+        <label for="password">密码：</label>
+        <input id="password" type="password" name="password" value="{{ password }}"><br/>
+        <input type="submit" value="登录">{% csrf_token %}
+    </form>
+
+<h1>welcome {{ username }}</h1>
+</br>    {{ login_error_info }}
+
+
+
+
+{% block content %}
+
+    <form action="../form/" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">提交</button>
+    </form>
+{% endblock content %}
+
+</body>
+</html>

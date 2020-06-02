@@ -1,0 +1,18 @@
+{%extends 'base.html' %}
+
+{% block page_title %}
+    test
+{% endblock %}
+{%block page_header%}
+    <h1 class="page-header">添加版本发布</h1>
+{%endblock%}
+
+
+{%block page_content%}
+    <form action="/repo_add/" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" class="btn btn-success" value="提交">
+    </form>
+{%endblock%}
+
